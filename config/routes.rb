@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  get '/', to: 'test#index'
+  namespace :api do
+    get '/', to: 'collection#index'
+  end
 end
