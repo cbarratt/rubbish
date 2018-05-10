@@ -19,6 +19,7 @@ module CollectionDates
 
   def self.parse_date(string_date)
     return Date.today.to_s if string_date == 'Today'
+    return Date.yesterday.to_s if string_date == 'Yesterday'
 
     Date.parse(string_date).to_s
   end
