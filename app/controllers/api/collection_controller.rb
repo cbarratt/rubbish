@@ -2,14 +2,9 @@ require_dependency './lib/collection_dates'
 
 class Api::CollectionController < Api::BaseController
   def index
-    if params[:cached] == 'true'
-      collections = Rails.cache.fetch("dates", expires_in: 60.minutes) do
-        ::CollectionDates.fetch
-      end
-    else
-      collections = ::CollectionDates.fetch
-    end
+    collections = { dates: ::CollectionDates.fetch(params[:postcode]) } if params[:postcode]
+    collections = { error: 'No postcode provided' } if params[:postcode].empty?
 
-    render json: { dates: collections }
+    render json: collections
   end
 end
