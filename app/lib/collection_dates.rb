@@ -1,12 +1,16 @@
 module CollectionDates
   class << self
     def fetch(postcode)
-      if fetch_from_db(postcode) == nil
-        fetch_from_source(postcode)
-        fetch_from_db(postcode)
-      end
+      db_record = fetch_from_db(postcode)
 
-      fetch_from_db(postcode)
+      if db_record.dig(:household).empty? ||
+        db_record.dig(:mixed).empty? ||
+        db_record.dig(:garden).empty?
+
+        fetch_from_source(postcode)
+      else
+        db_record
+      end
     end
 
     def fetch_from_source(postcode)
@@ -17,7 +21,7 @@ module CollectionDates
       end.compact
 
       collection_dates.slice!(0..1).each do |string|
-        Collection.first_or_create(
+        Collection.find_or_create_by(
           postcode: postcode,
           bin_type: 'household',
           date: parse_date(string)
@@ -25,7 +29,7 @@ module CollectionDates
       end
 
       collection_dates.slice!(0..1).each do |string|
-        Collection.first_or_create(
+        Collection.find_or_create_by(
           postcode: postcode,
           bin_type: 'mixed',
           date: parse_date(string)
@@ -33,12 +37,14 @@ module CollectionDates
       end
 
       collection_dates.slice!(0..1).each do |string|
-        Collection.first_or_create(
+        Collection.find_or_create_by(
           postcode: postcode,
           bin_type: 'garden',
           date: parse_date(string)
         )
       end
+
+      fetch_from_db(postcode)
     end
 
     def fetch_from_db(postcode)
