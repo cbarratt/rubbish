@@ -1,13 +1,15 @@
 module CollectionDates
   class << self
     def fetch(postcode)
-      db_record = fetch_from_db(postcode)
+      pretty_postcode = postcode.delete(' ').downcase
+
+      db_record = fetch_from_db(pretty_postcode)
 
       if db_record.dig(:household).empty? ||
         db_record.dig(:mixed).empty? ||
         db_record.dig(:garden).empty?
 
-        fetch_from_source(postcode)
+        fetch_from_source(pretty_postcode)
       else
         db_record
       end
@@ -19,6 +21,8 @@ module CollectionDates
       collection_dates = doc.css('.mb10 .ind-waste-wrapper', '.col-sm-4').map do |date|
         date.children[1].content if date.children[1]
       end.compact
+
+      Rails.logger.debug(collection_dates.inspect)
 
       collection_dates.slice!(0..1).each do |string|
         Collection.find_or_create_by(

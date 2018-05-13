@@ -3,6 +3,6 @@ class Api::CollectionController < Api::BaseController
     collections = { dates: ::CollectionDates.fetch(params[:postcode]) } if params[:postcode]
     collections = { error: 'No postcode provided' } if params.dig(:postcode).blank?
 
-    render json: collections
+    render json: JSON.pretty_generate(collections)
   end
 end

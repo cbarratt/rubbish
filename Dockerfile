@@ -3,7 +3,7 @@ FROM ruby:2.5
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y dnsutils nodejs mysql-client postgresql-client --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
